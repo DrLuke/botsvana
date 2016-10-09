@@ -16,7 +16,7 @@ class interests():
 
         if len(args) == 0:
             irc.sendmsg("NOTICE %s :Add yourself to an interest. You will be pinged whenever someone requests assistance on an interest you're subscribed to. (use !list to list those)" % nick)
-            irc.sendmsg("NOTICE %s :Usage: '!add <interest1> [<interest2> ... <interestN>]'" % nick)
+            irc.sendmsg("NOTICE %s :Usage: '!add interest1 [interest2 ... interestN]'" % nick)
             return
 
         args = args.split(" ")
@@ -70,23 +70,23 @@ class interests():
             irc.sendmsg("NOTICE %s :I can't let you do that %s. Please Identify with NickServ!" % (nick, nick))
             return
 
+        timeout = 10  # How often a batsignal can be lit
+
         if len(args) == 0:
             irc.sendmsg("NOTICE %s :Summon people interested in a topic." % nick)
-            irc.sendmsg("NOTICE %s :Usage: '!batsignal <topic>'" % nick)
+            irc.sendmsg("NOTICE %s :Usage: '!batsignal <topic>'. The batsignal can only be lit once every %d seconds." % (nick, timeout))
             irc.sendmsg("NOTICE %s :To get a list of available topics, use '!list all'" % nick)
 
         elif args in self.interests:
-            timeout = 10  # How often a batsignal can be lit
-
             if self.interests[args]["lastcalled"] < time.time() - timeout:
                 self.interests[args]["lastcalled"] = time.time()
                 self.saveInterests()
                 irc.sendmsg("NOTICE %s :Summoning all subscribers of topic %s" % (nick, args))
                 for user in self.interests[args]["users"]:
-                    if not user == nick:
-                        irc.sendmsg("NOTICE %s :%s: You have been summoned by %s because you're subsribed to topic '%s'. To unsubscribe, write '!remove %s' or '!removeall' to get removed from all topics." % (user, user, nick, args, args))
+                    #if not user == nick:
+                    irc.sendmsg("NOTICE %s :%s: You have been summoned by %s@%s because you're subsribed to topic '%s'. To unsubscribe, write '!remove %s' or '!removeall' in %s to get removed from all topics." % (user, user, nick, channel, args, args, channel))
             else:
-                irc.sendmsg("NOTICE %s :Too soon. Try again in %d seconds." % (nick, round(timeout - (time.time() - self.interests[args]["lastcalled"])) ))
+                irc.sendmsg("NOTICE %s :Too soon. Try again in %d seconds." % (nick, round(timeout - (time.time() - self.interests[args]["lastcalled"]))))
 
 
     def remove(self, command, nick, channel, args, irc):
@@ -96,7 +96,7 @@ class interests():
 
         if len(args) == 0:
             irc.sendmsg("NOTICE %s :Remove yourself from an interest." % nick)
-            irc.sendmsg("NOTICE %s :Usage: '!add <interest1> [<interest2> ... <interestN>]'" % nick)
+            irc.sendmsg("NOTICE %s :Usage: '!add interest1 [interest2 ... interestN]'" % nick)
             return
 
         args = args.split(" ")

@@ -55,7 +55,8 @@ class bot:
                 contrecv = False
             out += buf
 
-
+        if out:
+            print(bytes.decode(out)) #TODO: REMOVE
         try:
             if not identSpecialCase:
                 if out:
@@ -106,7 +107,8 @@ class bot:
                 printCommands = availableCommand
             else:
                 printCommands += ", %s" % availableCommand
-        self.sendmsg("NOTICE %s :This bot has the following commands available:" % nick)
+        self.sendmsg("NOTICE %s :This bot is used to subscribe to interests. When you're subscribed to an interest, someone can ping everyone subscribed to that interest with '!batsignal interest'." % nick)
+        self.sendmsg("NOTICE %s :To add yourself to an interest, use the '!add' command. To get help with any command, just type the command without arguments." % nick)
         self.sendmsg("NOTICE %s :%s" % (nick, printCommands))
 
     def checkIfIdent(self, nick):
